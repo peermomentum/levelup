@@ -1,0 +1,18 @@
+[
+  {
+    "deliver": "local",
+    "enabled": true,
+    "id": "a606d810d2b2",
+    "name": "Nightly GitHub push for /opt/hermes",
+    "schedule": {
+      "display": "0 5 * * *",
+      "expr": "0 5 * * *",
+      "kind": "cron"
+    },
+    "skills": [
+      "nightly-github-push",
+      "github-operations"
+    ],
+    "workdir": "/opt/hermes"
+  }
+]
