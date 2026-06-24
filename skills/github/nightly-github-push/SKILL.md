@@ -128,7 +128,10 @@ git status --short --branch
 4. **Missing credentials.** `gh` may be unavailable, but `git push` can still work. If push fails due to auth, report the exact error and ask the user to configure SSH or HTTPS credentials.
 5. **Non-fast-forward push.** Do not force-push. Stop and report that the branch needs manual pull/rebase/merge.
 6. **Secrets.** Automated `git add -A` can stage accidental secrets. Ensure `.gitignore` is appropriate before enabling this on sensitive directories.
-7. **Detached HEAD.** Refuse to commit when no current branch exists.
+7. **Public backup repo.** If the target repo is public and the backup contains any setup/configuration material, explicitly warn the user and prefer a sanitized artifact backup rather than a raw directory dump.
+8. **Hermes script-only cron paths.** `cronjob(no_agent=True, script=...)` requires scripts to live under the Hermes scripts directory and be referenced by relative filename, not absolute path. Put reusable backup scripts there first, then create the cron job with `script="name.sh"` and an absolute `workdir`.
+9. **Cron HOME / git credentials.** Script-only cron runs may not inherit the interactive shell's `HOME`; if git credentials/config live under a specific home, export `HOME` inside the backup script before `git push`.
+10. **Detached HEAD.** Refuse to commit when no current branch exists.
 
 ## Verification Checklist
 
