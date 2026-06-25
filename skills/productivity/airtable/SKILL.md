@@ -203,7 +203,7 @@ done
 
 ## Typical Hermes Workflow
 
-For roster-based buddy/accountability matching workflows, see `references/buddy-matching-roster.md` for a proven field design, secure token setup over messaging, availability-view pattern, and pair-confirmation update workflow.
+For roster-based buddy/accountability matching workflows, see `references/buddy-matching-roster.md` for a proven field design, secure token setup over messaging, availability-view pattern, and pair-confirmation update workflow. For the SuccessCircles / Momentum Buddy two-week pairing workflow specifically, see `references/successcircles-momentum-buddy-matching.md` for the known base/table IDs, observed Team Roster fields, recommended pairing-history table, scoring workflow, and member-facing access pattern.
 
 1. **Confirm auth.** `curl -s -o /dev/null -w "%{http_code}\n" https://api.airtable.com/v0/meta/bases -H "Authorization: Bearer $AIRTABLE_API_KEY"` — expect `200`.
 2. **Find the base.** List bases (step above) OR ask the user for the `app...` ID directly if the token lacks `schema.bases:read`.
@@ -224,7 +224,8 @@ For roster-based buddy/accountability matching workflows, see `references/buddy-
 ## Important Notes for Hermes
 
 - **Always use the `terminal` tool with `curl`.** Do NOT use `web_extract` (it can't send auth headers) or `browser_navigate` (needs UI auth and is slow).
-- **`AIRTABLE_API_KEY` flows from `~/.hermes/.env` into the subprocess automatically** when this skill is loaded — no need to re-export it before each `curl` call.
+- **Check both common token variable names.** This skill's canonical variable is `AIRTABLE_API_KEY`, but some Hermes environments use `AIRTABLE_TOKEN` in `~/.hermes/.env`. Before declaring Airtable unauthenticated, check both variables and test the one that is set with `GET /v0/meta/bases`. If workflows expect the canonical name, set `AIRTABLE_API_KEY` from `AIRTABLE_TOKEN` within the command environment when the canonical variable is absent.
+- **`AIRTABLE_API_KEY` flows from `~/.hermes/.env` into the subprocess automatically** when this skill is loaded — no need to re-export it before each `curl` call when that canonical variable exists.
 - **Escape curly braces in formulas carefully.** In a heredoc body, `{Status}` is literal. In a shell argument, `{Status}` is safe outside `{...}` brace-expansion context — but pass dynamic strings through `python3 urllib.parse.quote` before splicing into a URL.
 - **Pretty-print with `python3 -m json.tool`** (always present) rather than `jq` (optional). Only reach for `jq` when you need filtering/projection.
 - **Pagination is per-page, not global.** Airtable's 100-record cap is a hard limit; there is no way to bump it. Loop with `offset` until the field is absent.

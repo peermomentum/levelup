@@ -115,7 +115,11 @@ hermes tools                Interactive tool enable/disable (curses UI)
 hermes tools list           Show all tools and status
 hermes tools enable NAME    Enable a toolset
 hermes tools disable NAME   Disable a toolset
+```
 
+### Skills and in-repo skill authoring
+
+```
 hermes skills list          List installed skills
 hermes skills search QUERY  Search the skills hub
 hermes skills install ID    Install a skill (ID can be a hub identifier OR a direct https://…/SKILL.md URL; pass --name to override when frontmatter has no name)
@@ -126,8 +130,10 @@ hermes skills update        Update outdated skills
 hermes skills uninstall N   Remove a hub skill
 hermes skills publish PATH  Publish to registry
 hermes skills browse        Browse all available skills
-hermes skills tap add REPO  Add a GitHub repo as skill source
 ```
+
+When authoring a Hermes skill, keep it class-level: frontmatter + rich `SKILL.md`, with session-specific detail in `references/`, reusable starters in `templates/`, and re-runnable probes in `scripts/`. Avoid one-session bug skills. Validate that linked files are under the skill root and that nested reference packages do not contain `SKILL.md` files that would register as separate skills.
+
 
 ### MCP Servers
 
@@ -140,6 +146,8 @@ hermes mcp test NAME        Test connection
 hermes mcp configure NAME   Toggle tool selection
 ```
 
+**Native MCP client workflow.** When configuring MCP for Hermes, use this skill as the umbrella instead of a standalone `native-mcp` skill. Add/list/test/configure servers with the `hermes mcp ...` commands above, then start a fresh session or `/reload-mcp` so discovered tools are registered. For stdio servers, preserve the exact command/env/cwd; for HTTP servers, verify URL reachability and auth before assuming tools will appear.
+
 ### Gateway (Messaging Platforms)
 
 ```
@@ -150,6 +158,8 @@ hermes gateway restart      Restart the service
 hermes gateway status       Check status
 hermes gateway setup        Configure platforms
 ```
+
+**Container supervision.** For Docker/s6-overlay gateway work, treat the old `hermes-s6-container-supervision` notes as part of Hermes platform operations: inspect the s6 service tree, keep the main-program pattern intact, verify profile-specific gateways, and test service startup/logs inside the container rather than assuming host systemd behavior.
 
 Supported platforms: Telegram, Discord, Slack, WhatsApp, Signal, Email, SMS, Matrix, Mattermost, Home Assistant, DingTalk, Feishu, WeCom, BlueBubbles (iMessage), Weixin (WeChat), API Server, Webhooks. Open WebUI connects via the API Server adapter.
 
@@ -187,6 +197,8 @@ hermes webhook list         List subscriptions
 hermes webhook remove NAME  Remove a subscription
 hermes webhook test NAME    Send a test POST
 ```
+
+**Webhook subscription workflow.** Treat webhooks as part of the Hermes operations class: create a named subscription, test it with a real POST, inspect delivery/log output, and document the target route. Cron-run sessions should not recursively schedule more cron jobs; webhook-triggered runs likewise need self-contained prompts because no current-chat context is guaranteed.
 
 ### Profiles
 
@@ -934,13 +946,16 @@ Auto-discovery: any `tools/*.py` file with a top-level `registry.register()` cal
 
 All handlers must return JSON strings. Use `get_hermes_home()` for paths, never hardcode `~/.hermes`.
 
-### Adding a Slash Command
+### Adding or debugging slash/TUI commands
 
-1. Add `CommandDef` to `COMMAND_REGISTRY` in `hermes_cli/commands.py`
-2. Add handler in `cli.py` → `process_command()`
-3. (Optional) Add gateway handler in `gateway/run.py`
+Former narrow skills for TUI command debugging now belong here. For slash-command work:
 
-All consumers (help text, autocomplete, Telegram menu, Slack mapping) derive from the central registry automatically.
+1. Add or inspect `CommandDef` in `hermes_cli/commands.py` — it is the registry of record for help text, autocomplete, Telegram menu, Slack mapping, and gateway command mapping.
+2. Add/trace the CLI handler in `cli.py` → `process_command()`.
+3. Add/trace gateway handling in `gateway/run.py` when the command is gateway-visible.
+4. For Ink/TUI repaint or interaction bugs, reproduce in a PTY/tmux session, capture logs/output, and verify no stale command registry assumptions are involved.
+
+All consumers derive from the central registry automatically; avoid adding parallel command lists.
 
 ### Agent Loop (High Level)
 

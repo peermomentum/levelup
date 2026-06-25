@@ -21,8 +21,8 @@
     "id": "c2a1692f4293",
     "name": "Nightly LevelUp GitHub backup",
     "schedule": {
-      "display": "0 5 * * *",
-      "expr": "0 5 * * *",
+      "display": "0 0 * * *",
+      "expr": "0 0 * * *",
       "kind": "cron"
     },
     "skills": [],

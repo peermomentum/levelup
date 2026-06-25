@@ -123,13 +123,16 @@ git status --short --branch
 ## Common Pitfalls
 
 1. **Wrong directory.** Always use an absolute repo path. A cron run starts in a fresh session and may not inherit the interactive working directory.
-2. **Host timezone mismatch.** Check `date` and convert Central Time if cron has no timezone field.
+2. **Host timezone mismatch.** Check `date` and convert Central Time if cron has no timezone field. If the user simply says "midnight," use the scheduler host timezone and state it explicitly in the final response.
 3. **No Git repository.** If `git rev-parse --show-toplevel` fails, do not guess a repo path; ask the user.
 4. **Missing credentials.** `gh` may be unavailable, but `git push` can still work. If push fails due to auth, report the exact error and ask the user to configure SSH or HTTPS credentials.
-5. **Non-fast-forward push.** Do not force-push. Stop and report that the branch needs manual pull/rebase/merge.
-6. **Secrets.** Automated `git add -A` can stage accidental secrets. Ensure `.gitignore` is appropriate before enabling this on sensitive directories.
-7. **Public backup repo.** If the target repo is public and the backup contains any setup/configuration material, explicitly warn the user and prefer a sanitized artifact backup rather than a raw directory dump.
-8. **Hermes script-only cron paths.** `cronjob(no_agent=True, script=...)` requires scripts to live under the Hermes scripts directory and be referenced by relative filename, not absolute path. Put reusable backup scripts there first, then create the cron job with `script="name.sh"` and an absolute `workdir`.
+5. **Cron script path constraints.** Hermes `cronjob(no_agent=True, script=...)` expects the script path relative to `~/.hermes/scripts/` (usually `$HERMES_HOME/scripts`, e.g. `/opt/data/scripts` in the default profile), not an absolute path. Put reusable backup scripts there and pass only the filename.
+6. **Cron shell environment.** Script-only jobs may not inherit the same `HOME` or git config as the interactive session. For GitHub push jobs that rely on `~/.gitconfig` or credential helpers, set `HOME` explicitly inside the script when needed, then verify with a dry/manual script run before scheduling.
+7. **Silent no-change runs.** In `no_agent=True` jobs, empty stdout means no delivery. This is desirable for watchdog-style backups: keep the script quiet when there are no changes and print a concise message only when a commit was pushed or an error occurs.
+8. **Non-fast-forward push.** Do not force-push. Stop and report that the branch needs manual pull/rebase/merge.
+9. **Secrets.** Automated `git add -A` can stage accidental secrets. Ensure `.gitignore` is appropriate before enabling this on sensitive directories. For Hermes setup backups, prefer a sanitized scaffold instead of committing live runtime files.
+10. **Detached HEAD.** Refuse to commit when no current branch exists.
+
 9. **Cron HOME / git credentials.** Script-only cron runs may not inherit the interactive shell's `HOME`; if git credentials/config live under a specific home, export `HOME` inside the backup script before `git push`.
 10. **Detached HEAD.** Refuse to commit when no current branch exists.
 

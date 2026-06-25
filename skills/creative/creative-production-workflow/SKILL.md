@@ -17,7 +17,7 @@ metadata:
 
 This umbrella covers small-to-medium creative output workflows that previously lived as separate narrow skills: terminal text art, one-off HTML designs, disposable UI sketches, humanizing prose, and songwriting / AI music prompting.
 
-Detailed source playbooks from the absorbed narrow skills are retained under `references/absorbed-*.md` for maintainers who need the full original recipes.
+Detailed source playbooks from the absorbed narrow skills are retained under `references/source-packages/<skill-name>/source-skill.md` for maintainers who need the full original recipes.
 
 Use specialized visual-system skills such as `popular-web-designs`, `design-md`, `excalidraw`, `p5js`, `pixel-art`, or `manim-video` when the user asks directly for those mediums. Use this umbrella when the request is about the broader creative production class or when multiple creative modes overlap.
 
@@ -29,7 +29,8 @@ Load this skill when the user asks to:
 - create a polished one-off HTML artifact, landing page, prototype, visual board, or deck
 - sketch 2-3 disposable UI directions before building
 - humanize, de-AI, or voice-match prose
-- write lyrics, parody, song structures, Suno-style prompts, or AI music generation prompts
+- write lyrics, parody, song structures, Suno/HeartMuLa-style prompts, or AI music generation prompts
+- generate project ideas from constraints when the user has energy/tools but no direction
 
 ## Routing map
 
@@ -95,6 +96,10 @@ When asked to de-AI or voice-match text:
 
 For file edits, use targeted `patch` when possible and show the changed section or diff.
 
+## Creative ideation
+
+Use constraint-driven ideation when the user asks what to build, make, write, draw, automate, or explore. Pick constraints from a broad library (developer itch, annoying workflow, CLI that should exist, glue project, subtraction, copy-to-learn, one-million-scale, text-only interface, etc.), interpret them generously across media, and return three concrete ideas with clear first steps. If the user picks one, switch from ideation to production and build/verify the artifact.
+
 ## Songwriting and AI music
 
 For lyrics and music prompts:
@@ -103,7 +108,7 @@ For lyrics and music prompts:
 - Pick or invent a structure: ABABCB, AABA, strophic, or custom.
 - Balance rhyme, stress, and singability; read or sing lines aloud when possible.
 - For parody, map the original syllables, stresses, rhyme scheme, held vowels, and structure before writing replacements.
-- For Suno-style generation, write a style prompt with genre, mood, era, instrumentation, vocal persona, production, dynamics, BPM/key if useful, and exclusions.
+- For Suno/HeartMuLa-style generation, write a style prompt with genre, mood, era, instrumentation, vocal persona, production, dynamics, BPM/key if useful, and exclusions.
 - Use bracketed metatags in lyrics for structure, dynamics, vocal performance, and atmosphere.
 - Spell unusual words phonetically when AI singers are likely to mispronounce them.
 
