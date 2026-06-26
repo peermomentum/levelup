@@ -4,6 +4,7 @@ Session-derived troubleshooting notes for configuring Hermes Gateway with Telegr
 
 - If `hermes` is not on PATH but the repo/install is under `/opt/hermes`, verify `/opt/hermes/bin/hermes` and add it with `export PATH="/opt/hermes/bin:$PATH"`; persist in `~/.bashrc` if the user wants command-style usage.
 - `hermes gateway setup` may report `Service install not supported on this platform`; run the gateway in foreground or a managed background process instead: `hermes gateway run`.
+- On hosts running multiple Hermes profiles/gateways, do **not** use broad kill patterns like `pkill -f "hermes.*gateway"` because it can stop the user's active/default assistant gateway. Kill only the target profile, e.g. `pkill -f "hermes --profile buddy-concierge gateway run"`, or use `hermes --profile buddy-concierge gateway run --replace` when supported.
 - Telegram setup prompts for:
   1. Bot token from `@BotFather`.
   2. Allowed user IDs — use numeric Telegram IDs, not usernames; get them from `@userinfobot`.
