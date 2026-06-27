@@ -27,5 +27,18 @@
     },
     "skills": [],
     "workdir": "/opt/data/levelup"
+  },
+  {
+    "deliver": "origin",
+    "enabled": true,
+    "id": "80472360afcb",
+    "name": "Buddy Concierge gateway watchdog",
+    "schedule": {
+      "display": "every 5m",
+      "kind": "interval",
+      "minutes": 5
+    },
+    "skills": [],
+    "workdir": null
   }
 ]

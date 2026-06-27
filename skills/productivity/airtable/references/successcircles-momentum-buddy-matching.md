@@ -52,6 +52,49 @@ IF(
 
 Create a view named `Available for Buddy Matching` filtered to `Available for Pairing = Yes`.
 
+## Recommended Concierge request-intake table
+
+For member-facing Concierge intake, create a separate table in the same base named `Buddy Pairing Requests` (do not create a new base). This table captures a single member's request, shown recommendations, rejected suggestions, and admin-review state before any official pairing is confirmed.
+
+Recommended fields:
+
+- `Requesting Member` — primary/single line text, human-readable requester name.
+- `Telegram Username` — single line text.
+- `Cycle` — single line text, e.g. `2026-07-01 to 2026-07-14`.
+- `Person In Mind` — long text.
+- `Requested Buddy` — single line text for a typed name when an exact roster record is not yet resolved.
+- `Requesting Member Record` — linked record to `Team Roster`.
+- `Requested Buddy Record` — linked record to `Team Roster`.
+- `Goals / Focus Areas` — long text.
+- `Buddy Preference This Request` — long text; use this instead of overwriting the member's general roster preference.
+- `Cadence This Request` — single select: `Daily`, `Weekly`, `Weekly + SMS daily`, `Flexible / Not sure`, `Use my roster preference`.
+- `Upcoming Context` — long text.
+- `Intake Summary` — long text.
+- `Recommended Buddies Shown` — linked records to `Team Roster`, allow multiple.
+- `Rejected Suggestions` — linked records to `Team Roster`, allow multiple.
+- `Selected Buddy` — linked record to `Team Roster`.
+- `Adjustment Notes` — long text.
+- `Recommendation Reasoning` — long text.
+- `Status` — single select: `Intake Started`, `Intake Complete`, `Recommendations Shown`, `Member Requested Other Options`, `Pending Admin Review`, `Pending Buddy Confirmation`, `Confirmed`, `Declined`, `Cancelled`.
+- `Admin Notes` — long text.
+- `Admin Notified` — checkbox.
+- `Created By` — single select: `Concierge`, `Admin`, `Manual Import`.
+- `Last Bot Action` — single line text, e.g. `intake_complete`, `shown_recommendations`, `submitted_pending_admin_review`.
+- `Created At` — created time.
+- `Last Updated` — last modified time.
+
+Concierge request workflow:
+
+1. Verify access first: Telegram sender is in `@mombud`, matches `Team Roster`, `Membership = Current`, and `Team Roster = Yes`.
+2. Collect intake, summarize it, and ask the member to confirm before writing Airtable.
+3. Create/update `Buddy Pairing Requests` with `Status = Intake Complete` and `Created By = Concierge`.
+4. Recommend 2–3 eligible roster candidates with concise, non-private reasons. Do not expose the full roster or contact/private notes.
+5. If the member chooses a recommendation or names a specific person, set the request to `Pending Admin Review`; do not auto-confirm a match.
+6. If they ask for other options, show new recommendations without marking prior options rejected unless they clearly disliked them.
+7. If they say they do not like the options, add shown candidates to `Rejected Suggestions`, store `Adjustment Notes`, then rerun recommendations.
+8. If they say “you choose,” choose the highest-scoring option and ask for member confirmation before submitting for admin review.
+9. Notify the admin when the request reaches `Pending Admin Review`.
+
 ## Recommended pairing history table
 
 Create a separate `Buddy Pairings` table to support cooldowns, continuation, and auditability:
@@ -72,6 +115,32 @@ IF(AND({Member 1 Confirmed}, {Member 2 Confirmed}), "Yes", "No")
 ```
 
 Optional: `Continued Pairing`, `Member 1 Wants Continue`, `Member 2 Wants Continue`, `Created By`.
+
+## Concierge pairing request table pattern
+
+For the Success Circles Concierge bot, keep member profile/default preference data in `Team Roster` and capture each cycle/request in a separate table in the same base, e.g. `Buddy Pairing Requests`. Do **not** create a new base for this workflow.
+
+Recommended `Buddy Pairing Requests` fields:
+
+- `Requesting Member` — primary single-line text, readable requester name.
+- `Telegram Username` — single-line text.
+- `Cycle` — single-line text, e.g. `2026-07-01 to 2026-07-14`.
+- `Person In Mind` — long text for free-form requested person/name.
+- `Requested Buddy` — single-line text backup/free-form name.
+- `Requesting Member Record` — linked record to `Team Roster`.
+- `Requested Buddy Record` — linked record to `Team Roster`.
+- `Goals / Focus Areas` — long text.
+- `Upcoming Context` — long text.
+- `Intake Summary` — long text.
+- `Buddy Preference This Request` — long text. Use this even when roster has general preference fields; roster = default preference, request table = current-cycle need.
+- `Cadence This Request` — single select: `Daily`, `Weekly`, `Weekly + SMS daily`, `Flexible / Not sure`, `Use my roster preference`.
+- `Recommended Buddies Shown` — linked records to `Team Roster`, allow multiple.
+- `Rejected Suggestions` — linked records to `Team Roster`, allow multiple.
+- `Selected Buddy` — linked record to `Team Roster`.
+- `Adjustment Notes` — long text for “I don’t like these” / desired adjustment feedback.
+- `Recommendation Reasoning` — long text explaining why candidates were suggested.
+
+Manual setup workflow preferred by the user: guide one Airtable field batch at a time, then verify schema via the metadata API before giving the next batch or updating Concierge bot behavior. If a field already exists in `Team Roster`, distinguish default roster data from request-specific data instead of blindly duplicating the same field name.
 
 ## Matching workflow
 

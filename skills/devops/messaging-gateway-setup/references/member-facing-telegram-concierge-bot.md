@@ -14,24 +14,36 @@ Use this reference when a community wants members to connect to a Hermes-powered
 Start safely, then broaden access:
 
 1. During first setup, allowlist only the owner/admin numeric Telegram ID.
-2. Verify end-to-end with a real Telegram message such as `/start`.
-3. After verification, decide one of these access modes:
+2. Verify end-to-end with a real Telegram message such as `/start` or a natural-language trigger like “I want a buddy.”
+3. Be explicit about the two meanings of “limited” for member-facing bots:
+   - **Limited by membership:** only verified community members should reach the intake flow.
+   - **Limited by purpose:** the bot should only handle the pairing workflow, not general Hermes/admin tasks.
+4. After verification, decide one of these access modes:
    - add known member numeric Telegram IDs to the allowlist;
-   - open the concierge bot to all users if the bot is intentionally public;
-   - keep the bot reachable by all Telegram users but require membership verification before intake;
+   - keep the bot reachable by all Telegram users but require channel/roster verification before intake;
    - keep the bot public but require an intake/approval step in the conversation or backing CRM/Airtable.
 
-Do not use Telegram handles as allowlist entries; use numeric Telegram user IDs.
+Do not use Telegram handles as allowlist entries; use numeric Telegram user IDs. For a broad member launch, do not rely on prompt wording alone for safety: restrict the profile/toolsets and install a real access gate before broadening the gateway allowlist.
 
 ### Channel-gated member access
 
 For communities with many rotating members, avoid manually maintaining weekly `allowed_users` lists. A better pattern is:
 
 1. Add the concierge bot to the community Telegram channel/group (for example `@mombud`) and make it an admin if Telegram requires that for `getChatMember` checks.
-2. Remove or relax the Hermes gateway hard allowlist so member messages reach the concierge at all; otherwise the gateway rejects the user before the agent/helper can check membership.
-3. On `/start` or phrases like “I want a buddy,” use Telegram sender metadata automatically (`id`, username, first/last name/display name) and check that specific user against the channel with Telegram Bot API `getChatMember`.
-4. Do **not** ask pairing/intake questions until membership is verified.
-5. If verified, continue intake. If not verified, tell the user to join the required channel and try `/start` again. If the membership check errors, give a temporary verification-failure message and ask them to retry later.
+2. Keep the initial gateway allowlist narrow while building the gate (for example only the owner/admin numeric Telegram ID). Do **not** open the gateway to all Telegram users until a replacement access gate is installed and verified.
+3. Implement a real pre-intake access check, not just prompt instructions. A robust Hermes pattern is a `pre_gateway_dispatch` plugin/hook or equivalent gateway-side guard that runs before the agent receives the message:
+   - accept `**kwargs` in the hook signature because gateway versions may pass extra metadata such as `telemetry_schema_version`;
+   - read the sender Telegram numeric user ID from `MessageEvent.source.user_id` and username/display name from the raw Telegram message when available;
+   - call Telegram Bot API `getChatMember` for the required channel/group (`@mombud`);
+   - treat `member`, `administrator`, and `creator` as passing Telegram statuses;
+   - check Airtable/CRM roster membership for the same Telegram account before allowing pairing intake;
+   - check the active-member/status field, not only record existence. For Success Circles Airtable, `Team Roster.Membership = Current` is the active member gate; `Past` and `Reserve` should be blocked unless policy changes. `Availability` is cycle availability, not membership status;
+   - if both checks pass, rewrite the message with a compact verified-access header so the agent does not try to verify again;
+   - if either check fails, send a short denial/next-step message and skip agent dispatch.
+4. Only after the gate passes with the owner/admin test account should you relax `TELEGRAM_ALLOWED_USERS` / gateway allowlist so all members can reach the gate. The gate, not the LLM prompt alone, is what limits access.
+5. Keep scope-limiting separate from access-limiting: disable or block broad tools (terminal, file writes, memory edits, cron, GitHub/admin tools) and instruct the profile to refuse unrelated requests so the member bot remains pairing-only.
+5. On `/start` or phrases like “I want a buddy,” use Telegram sender metadata automatically (`id`, username, first/last name/display name). Do **not** ask pairing/intake questions until both membership and roster checks are verified.
+6. If verified, continue intake. If not verified, tell the user the bot is only for verified Momentum Buddy members and how to contact Success Circles support. If the membership check errors, give a temporary verification-failure message and ask them to retry later.
 
 Telegram bots generally cannot export a full channel member list. Design the gate as “check this sender when they message the bot,” not “sync all subscribers.”
 ## Member onboarding flow

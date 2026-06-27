@@ -53,8 +53,8 @@ Pick the install path based on what discovery shows:
 
 - Root/admin available: install rootful Docker through the OS package manager or Docker's official repo.
 - No root/admin but user namespaces are available: attempt rootless Docker after verifying prerequisites.
-- Running inside a managed container/CI/agent sandbox: the user may need the host/admin to install Docker or mount a Docker socket.
-- CLI exists but daemon/socket is missing: report "Docker CLI only" and install/start the engine, not the client again.
+- Running inside a managed container/CI/agent sandbox: the user may need the host/admin to install Docker, mount a Docker socket, or change restart policy through the platform UI/support instead of from inside the container.
+- CLI exists but daemon/socket is missing: report "Docker CLI only" and install/start the engine, not the client again. If the environment also lacks `sudo` and cannot reach `/var/run/docker.sock`, stop retrying local Docker commands and route the user to the host/provider control plane.
 
 ### 3. Rootful Docker: Debian/Ubuntu quick path
 
