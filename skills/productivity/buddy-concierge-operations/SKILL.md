@@ -125,3 +125,24 @@ not already unavailable / already buddied this cycle
 ```
 
 See `references/buddy-concierge-gate-and-flow.md` for the concrete access-gate and wording details captured from the implementation session.
+
+## Email notification and admin approval expansion
+
+When expanding the buddy workflow to email notifications, preserve the security boundary: Concierge remains member-facing and pairing-only, while main Hermes owns Gmail access. Use Airtable status fields as the handoff between them.
+
+Key design rules:
+
+- Gmail account: `connect@successcircles.com`.
+- Preferred Gmail integration: Google OAuth Gmail API scoped to Gmail, configured only in the main Hermes profile; do not store Gmail credentials/tokens in `/opt/data/profiles/buddy-concierge`.
+- Concierge sends the Telegram admin-review message after the requester confirms their buddy choice.
+- Main Hermes sends the admin email after requester confirmation.
+- Member emails are sent only after admin approval.
+- Admin approves/rejects by replying to Concierge with requester + requested buddy names:
+  ```text
+  approve request of [Requester Name] with [Requested Buddy Name]
+  reject request of [Requester Name] with [Requested Buddy Name]
+  ```
+- Do not require admin to paste a profile link; retrieve requester `Profile Link`, member `Email Address`, and `Mobile #` from Airtable `Team Roster`.
+- Do not CC `connect@successcircles.com` on member emails; Gmail Sent Mail is the record.
+
+See `references/buddy-concierge-email-approval-workflow.md` for the Airtable fields, status transitions, admin Telegram wording, Gmail handoff, and final email templates.
