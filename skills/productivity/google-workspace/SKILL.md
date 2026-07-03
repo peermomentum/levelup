@@ -116,19 +116,16 @@ explicit (for example `~/Downloads/hermes-google-client-secret.json`), then run
 
 ### Step 3: Get authorization URL
 
-Use the service set chosen in Step 1. Examples:
+Current installed setup.py may not support `--services` or `--format`; check `--help` before using optional flags. If unsupported, run:
 
 ```bash
-$GSETUP --auth-url --services email,calendar --format json
-$GSETUP --auth-url --services calendar,drive,sheets,docs --format json
-$GSETUP --auth-url --services all --format json
+$GSETUP --auth-url
 ```
 
-This returns JSON with an `auth_url` field and also saves the exact URL to
-`~/.hermes/google_oauth_last_url.txt`.
+This prints the OAuth URL directly. Newer versions may also support service narrowing / JSON output; only use those flags when `--help` confirms they exist.
 
 Agent rules for this step:
-- Extract the `auth_url` field and send that exact URL to the user as a single line.
+- Send the exact printed URL to the user as a single line.
 - Tell the user that the browser will likely fail on `http://localhost:1` after approval, and that this is expected.
 - Tell them to copy the ENTIRE redirected URL from the browser address bar.
 - If the user gets `Error 403: access_denied`, send them directly to `https://console.cloud.google.com/auth/audience` to add themselves as a test user.
