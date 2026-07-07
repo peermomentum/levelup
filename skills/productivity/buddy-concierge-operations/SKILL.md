@@ -31,10 +31,14 @@ Bot checks @mombud with Telegram getChatMember
 ↓
 Bot checks Airtable Team Roster by Telegram username/link
 ↓
+If no username/link match is possible, bot uses a conservative fallback: exact unique Telegram display-name match to an active Team Roster Name
+↓
 Bot only allows if Airtable Membership = Current
 ↓
 Bot only allows if Airtable Team Roster = Yes
 ```
+
+Display-name fallback is intentionally narrow because Telegram display names are user-editable: it requires a specific two-word-or-more display name that uniquely matches one active roster record by normalized full name or first+last name. Prefer storing a real `@username` or `https://t.me/username` in Airtable when available.
 
 Key Airtable source of truth:
 
@@ -97,6 +101,10 @@ The bot may mention Telegram only for the `@mombud` membership check or for matc
    Gateway running
    ```
 5. Test with the user's own `@successcircles` account before inviting Joseph or members.
+
+## Past/favorite buddies lookup
+
+The member-facing `buddy_concierge_pairing` tool includes `action = lookup_past_favorite_buddies`. When a verified member asks for past buddies / favorite buddies / draft picks during the “someone in mind” intake question, the bot reads that member’s own Team Roster `Draft Picks / Fav Buddies` long-text field, matches it against Team Roster names, and returns `clear_matches` plus lower-confidence `possible_matches` for first-name/last-name-only text. The bot should show names as choices, ask the member to choose when partial matches exist, and never expose raw roster notes, contact details, membership status, or the full roster. The chosen name remains a preferred/requested buddy only and still requires admin review.
 
 ## Post-intake recommendation flow v1
 
