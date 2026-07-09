@@ -14,12 +14,16 @@ These details came from the implementation/troubleshooting session for the Succe
 
 A member should reach the pairing intake only when all of these are true:
 
-1. Telegram `getChatMember` says the sender is a member/admin/creator of `@mombud`.
-2. Sender's Telegram username/link matches `Team Roster`.`Telegram Account` in Airtable.
+1. Telegram `getChatMember` says the sender's numeric Telegram user ID is a member/admin/creator of `@mombud`.
+2. The sender is matched to exactly one Airtable `Team Roster` record by one of these identity methods, in priority order:
+   - stored `Team Roster`.`Telegram User ID`;
+   - public Telegram username / `Telegram Account`, if present;
+   - explicit Telegram contact-share button matched to `Team Roster`.`Mobile #`, accepted only when `contact.user_id` equals the sender's Telegram user ID;
+   - narrow unique display-name fallback only when necessary.
 3. Airtable `Membership` is `Current`.
 4. Airtable `Team Roster` is `Yes`.
 
-Do not use Airtable `Availability` as the front-door access flag. `Availability` is for matching/cycle availability.
+Do not use Airtable `Availability` as the front-door access flag. `Availability` is for matching/cycle availability. Members should not be asked to create a public Telegram username; the preferred no-username path is the native Telegram “Share my phone number” button, then storing Telegram User ID verification fields on the matched Team Roster record.
 
 ## Airtable fields observed
 

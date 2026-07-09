@@ -27,18 +27,24 @@ The intended access flow is:
 ```text
 User messages Concierge
 ↓
-Bot checks @mombud with Telegram getChatMember
+Bot captures Telegram numeric user ID, display name, and public username if present
 ↓
-Bot checks Airtable Team Roster by Telegram username/link
+Bot checks @mombud with Telegram getChatMember using the numeric Telegram user ID
 ↓
-If no username/link match is possible, bot uses a conservative fallback: exact unique Telegram display-name match to an active Team Roster Name
+Bot checks Airtable Team Roster by stored Telegram User ID first, then public username / Telegram Account if present
+↓
+If no confident roster match exists, bot asks the member to tap Telegram's native “Share my phone number” contact button
+↓
+Bot accepts the contact only if Telegram contact.user_id equals the sender's Telegram user ID, then normalizes the phone number and matches it to Team Roster `Mobile #`
+↓
+If exactly one active roster record matches, bot stores the Telegram User ID and verification metadata on Team Roster for future access
 ↓
 Bot only allows if Airtable Membership = Current
 ↓
 Bot only allows if Airtable Team Roster = Yes
 ```
 
-Display-name fallback is intentionally narrow because Telegram display names are user-editable: it requires a specific two-word-or-more display name that uniquely matches one active roster record by normalized full name or first+last name. Prefer storing a real `@username` or `https://t.me/username` in Airtable when available.
+Display-name fallback is intentionally narrow because Telegram display names are user-editable: it requires a specific two-word-or-more display name that uniquely matches one active roster record by normalized full name or first+last name. Prefer the durable identity path: stored Telegram User ID, public `@username` when available, or explicit contact-share match against Team Roster `Mobile #`. Members should not be asked to create a public Telegram username just for Concierge access.
 
 Key Airtable source of truth:
 
@@ -46,6 +52,12 @@ Key Airtable source of truth:
 - Roster table: `tbl8EZW9OIJRMs1bf` — `Team Roster`.
 - Relevant fields:
   - `Telegram Account`
+  - `Mobile #`
+  - `Telegram User ID` (single line text; Concierge/Hermes may update only for identity verification)
+  - `Telegram Verified At` (date/time; Concierge/Hermes may update only for identity verification)
+  - `Telegram Verification Method` (single line text; Concierge/Hermes may update only for identity verification, e.g. `username`, `shared_mobile`, `admin_manual`)
+  - `Telegram Display Name` (single line text; optional troubleshooting snapshot; Concierge/Hermes may update)
+  - `Telegram Username` (single line text; optional snapshot; Concierge/Hermes may update)
   - `Membership` with active value `Current`.
   - `Team Roster` with allowed value `Yes`.
   - `Availability` for pairing-cycle eligibility, not front-door access.
@@ -145,11 +157,13 @@ Key design rules:
 - Concierge sends the Telegram admin-review message after the requester confirms their buddy choice.
 - Main Hermes sends the admin email after requester confirmation.
 - Member emails are sent only after admin approval.
-- Admin approves/rejects by replying to Concierge with requester + requested buddy names:
+- Admin approves/rejects by replying to Concierge with requester + requested buddy names. This is the intended admin workflow and should not require manual Airtable editing:
   ```text
   approve request of [Requester Name] with [Requested Buddy Name]
   reject request of [Requester Name] with [Requested Buddy Name]
   ```
+- The Concierge tool/plugin must support this Telegram admin command by finding the pending `Buddy Pairing Requests` record and updating the request/admin-status fields in Airtable. If the member-facing tool lacks approval/rejection actions, that is an implementation gap to fix, not a process change.
+- Concierge should not need broad Team Roster write access for approvals/rejections. Approval/rejection primarily updates `Buddy Pairing Requests`; Team Roster writes are limited to the Telegram verification fields only.
 - Do not require admin to paste a profile link; retrieve requester `Profile Link`, member `Email Address`, and `Mobile #` from Airtable `Team Roster`.
 - Do not CC `connect@successcircles.com` on member emails; Gmail Sent Mail is the record.
 
