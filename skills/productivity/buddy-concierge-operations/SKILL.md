@@ -116,7 +116,9 @@ The bot may mention Telegram only for the `@mombud` membership check or for matc
 
 ## Past/favorite buddies lookup
 
-The member-facing `buddy_concierge_pairing` tool includes `action = lookup_past_favorite_buddies`. When a verified member asks for past buddies / favorite buddies / draft picks during the “someone in mind” intake question, the bot reads that member’s own Team Roster `Draft Picks / Fav Buddies` long-text field, matches it against Team Roster names, and returns `clear_matches` plus lower-confidence `possible_matches` for first-name/last-name-only text. The bot should show names as choices, ask the member to choose when partial matches exist, and never expose raw roster notes, contact details, membership status, or the full roster. The chosen name remains a preferred/requested buddy only and still requires admin review.
+The member-facing `buddy_concierge_pairing` tool includes `action = lookup_past_favorite_buddies`. When a verified member asks for past buddies / favorite buddies / draft picks during the “someone in mind” intake question, the bot reads that member’s own Team Roster `Past Buddies` and `Draft Picks / Fav Buddies` long-text fields, matches them against Team Roster names, and returns `clear_matches` plus lower-confidence `possible_matches` for first-name/last-name-only text. The bot should show names as choices, ask the member to choose when partial matches exist, and never expose raw roster notes, contact details, membership status, or the full roster. The chosen name remains a preferred/requested buddy only and still requires admin review.
+
+For bulk `Past Buddies` imports from CSV, follow `references/past-buddies-csv-import.md`: confirm overwrite/merge semantics, conservatively match CSV member names to Airtable `Name`, back up old values, PATCH in batches of 10, verify by readback, and report unmatched/ambiguous names without creating new roster members.
 
 ## Post-intake recommendation flow v1
 
