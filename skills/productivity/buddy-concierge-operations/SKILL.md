@@ -150,7 +150,9 @@ See `references/buddy-concierge-gate-and-flow.md` for the concrete access-gate a
 
 ## Email notification and admin approval expansion
 
-When expanding the buddy workflow to email notifications, preserve the security boundary: Concierge remains member-facing and pairing-only, while main Hermes owns Gmail access. Use Airtable status fields as the handoff between them.
+When expanding or describing the buddy workflow's email notifications, preserve the security boundary: Concierge remains member-facing and pairing-only, while main Hermes owns Gmail access. Use Airtable status fields as the handoff between them.
+
+Before telling the user that member emails are live, distinguish the documented/intended design from actual implementation: inspect the Concierge plugin/admin actions, Airtable `Buddy Pairing Requests` email-status fields, main-profile scripts, and cron jobs/watchers. If only fields/templates exist but no watcher/sender is active, say the email workflow is documented/prepared but not fully automatic yet.
 
 Key design rules:
 
@@ -159,14 +161,18 @@ Key design rules:
 - Concierge sends the Telegram admin-review message after the requester confirms their buddy choice.
 - Main Hermes sends the admin email after requester confirmation.
 - Member emails are sent only after admin approval.
+- When asked what emails are sent after approval, provide the two member templates from `references/buddy-concierge-email-approval-workflow.md`: requester notification (`Your Momentum Braintrust Buddy pairing request has been sent`) and requested-buddy request (`Momentum Braintrust Buddy Pairing Request from [Requester Name]`). Include the 5-minute alignment-call instruction and the requirement to let Success Circles know if both agree.
 - Admin approves/rejects by replying to Concierge with requester + requested buddy names. This is the intended admin workflow and should not require manual Airtable editing:
   ```text
   approve request of [Requester Name] with [Requested Buddy Name]
   reject request of [Requester Name] with [Requested Buddy Name]
   ```
-- The Concierge tool/plugin must support this Telegram admin command by finding the pending `Buddy Pairing Requests` record and updating the request/admin-status fields in Airtable. If the member-facing tool lacks approval/rejection actions, that is an implementation gap to fix, not a process change.
+- The Concierge plugin handles these Telegram admin commands directly in `pre_gateway_dispatch`: it finds exactly one pending `Buddy Pairing Requests` record matching requester + requested buddy, then sets `Admin Approval Status`, `Admin Decision At`, `Admin Decision By`, `Admin Approval Raw Message`, `Status`, `Last Bot Action`, and `Member Email Status`.
+- Approval sets `Member Email Status = Needs Sending`; rejection sets `Member Email Status = Not Sent - Rejected`.
+- Main-profile script `/opt/data/scripts/buddy-concierge-email-watcher.py` polls approved requests and sends member emails from the Gmail OAuth account `/opt/data/google_token.json` (`connect@successcircles.com`). It is scheduled by cron job `Buddy Concierge approved-request email sender` (`job_id=53cbeeb71fa6`) every 2 minutes, no-agent/silent when there is no work.
 - Concierge should not need broad Team Roster write access for approvals/rejections. Approval/rejection primarily updates `Buddy Pairing Requests`; Team Roster writes are limited to the Telegram verification fields only.
-- Do not require admin to paste a profile link; retrieve requester `Profile Link`, member `Email Address`, and `Mobile #` from Airtable `Team Roster`.
+- Do not require admin to paste a profile link; the email watcher retrieves requester `Profile Link`, member `Email Address`, and `Mobile #` from Airtable `Team Roster` linked records.
 - Do not CC `connect@successcircles.com` on member emails; Gmail Sent Mail is the record.
+- When Success Circles confirms pending/admin-review records are only trial/test records, do not delete them. Mark them resolved/cancelled with non-email-sending statuses; see `references/test-request-cleanup.md`.
 
-See `references/buddy-concierge-email-approval-workflow.md` for the Airtable fields, status transitions, admin Telegram wording, Gmail handoff, and final email templates.
+See `references/buddy-concierge-email-approval-workflow.md` for the Airtable fields, status transitions, admin Telegram wording, Gmail handoff, and final email templates. Use `references/buddy-concierge-sop.md` for a copy-ready Success Circles Team SOP with exact member/admin/bot phrases, backend steps, status transitions, verification checks, and email copy. Use `templates/member-onboarding-email.md` when drafting a concise member onboarding email for how to use `@BuddyConciergeBot` without overthinking.

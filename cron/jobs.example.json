@@ -40,5 +40,18 @@
     },
     "skills": [],
     "workdir": null
+  },
+  {
+    "deliver": "origin",
+    "enabled": true,
+    "id": "53cbeeb71fa6",
+    "name": "Buddy Concierge approved-request email sender",
+    "schedule": {
+      "display": "every 2m",
+      "kind": "interval",
+      "minutes": 2
+    },
+    "skills": [],
+    "workdir": null
   }
 ]
