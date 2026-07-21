@@ -116,9 +116,11 @@ The bot may mention Telegram only for the `@mombud` membership check or for matc
 
 ## Past/favorite buddies lookup
 
-The member-facing `buddy_concierge_pairing` tool includes `action = lookup_past_favorite_buddies`. When a verified member asks for past buddies / favorite buddies / draft picks during the “someone in mind” intake question, the bot reads that member’s own Team Roster `Past Buddies` and `Draft Picks / Fav Buddies` long-text fields, matches them against Team Roster names, and returns `clear_matches` plus lower-confidence `possible_matches` for first-name/last-name-only text. The bot should show names as choices, ask the member to choose when partial matches exist, and never expose raw roster notes, contact details, membership status, or the full roster. The chosen name remains a preferred/requested buddy only and still requires admin review.
+The member-facing `buddy_concierge_pairing` tool includes `action = lookup_past_favorite_buddies`. When a verified member asks for past buddies / favorite buddies / draft picks during the “someone in mind” intake question, the bot reads that member’s own Team Roster `Past Buddies` and `Draft Picks / Fav Buddies` long-text fields, matches them against Team Roster names, and returns `clear_matches` plus lower-confidence `possible_matches` for first-name/last-name-only text. The bot should show names as choices using `display_name` or `name (availability_label)`, e.g. `David Vogel (available)` or `Jorge Colon (unavailable)`. Airtable Availability values `Available` and `Reserve - potentially available` display as `available`; all other values display as `unavailable`. Ask the member to choose when partial matches exist, and never expose raw roster notes, contact details, membership status, or the full roster. A past/favorite buddy shown as unavailable must not be submitted/requested; ask the member to choose an available option, see other recommendations, or type `no preference`.
 
 For bulk `Past Buddies` imports from CSV, follow `references/past-buddies-csv-import.md`: confirm overwrite/merge semantics, conservatively match CSV member names to Airtable `Name`, back up old values, PATCH in batches of 10, verify by readback, and report unmatched/ambiguous names without creating new roster members.
+
+For dated past-buddy questions, use the normalized `Buddy Pairing History` table rather than stuffing dates into the `Past Buddies` text field. The live table is `tblgShzMSniKPOXba`. Concierge supports `buddy_concierge_pairing` action `lookup_pairing_history` for “Who was my last buddy?”, “When did I last buddy with [Name]?”, and “Show my past buddies with dates.” It returns `most_recent` and `history` records with cycle dates, Duo/Triad type, and partner `display_name` values. See `references/buddy-pairing-history.md` for the table design and `references/buddy-pairing-history-import-and-lookup.md` for the 2024-2026 Excel import rules, `PAUSED TEMPORARILY:` stop marker, Duo/Triad/Member C handling, availability display/requestability, and future Concierge-approved pairing writeback.
 
 ## Post-intake recommendation flow v1
 
@@ -139,12 +141,14 @@ When the authorized member completes intake, the bot should not immediately conf
 Candidate eligibility v1:
 
 ```text
-Membership = Current
+Membership = Current or Reserve
 Team Roster = Yes
-Availability = Available
+Availability = Available OR Reserve - potentially available
 not self
 not already unavailable / already buddied this cycle
 ```
+
+Only members whose Airtable Availability is exactly `Available` or `Reserve - potentially available` may be recommended/suggested/requested. Display `Reserve - potentially available` as member-facing `available`; all other Availability values display as `unavailable` and are not requestable.
 
 See `references/buddy-concierge-gate-and-flow.md` for the concrete access-gate and wording details captured from the implementation session.
 
