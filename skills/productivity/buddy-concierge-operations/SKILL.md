@@ -92,6 +92,32 @@ The bot may mention Telegram only for the `@mombud` membership check or for matc
 - On denial, send a Telegram denial message directly and return `{"action": "skip", ...}`.
 - Include defense-in-depth `pre_tool_call` blocking for member-facing sessions: block terminal/file/code/cron/memory/delegation/admin tools unless explicitly redesigning the bot.
 
+## Kai naming and Telegram identity
+
+The member-facing name of `@BuddyConciergeBot` is **Kai**. The bot should introduce itself as Kai in the verified welcome/intake flow and in access-gate denial/temporary-error messages. When the user says “Kai” or “Concierge bot,” treat that as referring to `@BuddyConciergeBot`.
+
+Primary files to update for member-facing naming/copy:
+
+- `/opt/data/profiles/buddy-concierge/SOUL.md` — main persona and verified welcome/intake wording.
+- `/opt/data/profiles/buddy-concierge/skills/productivity/buddy-concierge/SKILL.md` — pairing behavior skill and welcome templates.
+- `/opt/data/profiles/buddy-concierge/plugins/buddy_concierge_gate/__init__.py` — pre-agent access-gate denial/temporary-verification messages.
+
+Recommended verified welcome opening:
+
+```text
+Hi, I’m Kai, your Success Circles Buddy Concierge.
+
+I verified your Momentum Buddy Reminders access.
+```
+
+Recommended blocked/temporary opening:
+
+```text
+Hi, I’m Kai, the Success Circles Buddy Concierge.
+```
+
+Telegram handle guidance: prefer keeping the stable username `@BuddyConciergeBot` during rollout and branding the bot as Kai in the Telegram display name/messages. If changing via BotFather, low-risk changes are `/setname` to `Kai — Buddy Concierge` and `/setdescription`; avoid changing the `@...` username until links, SOPs, onboarding copy, and member instructions have been updated. Telegram bot usernames generally need to end in `bot`, so `@KaiBuddyConcierge` may be invalid; `@KaiBuddyConciergeBot` is the plausible later rename if truly needed.
+
 ## Restart and verification pattern
 
 1. Syntax-check plugin edits:
@@ -107,8 +133,10 @@ The bot may mention Telegram only for the `@mombud` membership check or for matc
    ```bash
    cd /opt/hermes && /opt/hermes/.venv/bin/hermes --profile buddy-concierge gateway run
    ```
+   If Hermes refuses an in-gateway restart with “Refusing to restart the gateway from inside the gateway process,” do not use broad `pkill`. Use an outside supervisor path such as a one-shot scheduler/cron script that targets only the exact buddy-concierge gateway command, or ask the user to run `/opt/hermes/.venv/bin/hermes --profile buddy-concierge gateway restart` from a separate shell.
 4. Verify logs show:
    ```text
+   Active profile: buddy-concierge
    Connected to Telegram
    Gateway running
    ```
