@@ -33,7 +33,7 @@ Bot checks @mombud with Telegram getChatMember using the numeric Telegram user I
 ↓
 Bot checks Airtable Team Roster by stored Telegram User ID first, then public username / Telegram Account if present
 ↓
-If no confident roster match exists, bot asks the member to tap Telegram's native “Share my phone number” contact button
+- If no confident roster match exists, bot asks the member to tap Telegram's native “Share my phone number” contact button. This requires plugin contact-share handling: verify contact.user_id equals sender user_id, normalize `contact.phone_number`, match one active Team Roster `Mobile #`, then store Telegram verification fields.
 ↓
 Bot accepts the contact only if Telegram contact.user_id equals the sender's Telegram user ID, then normalizes the phone number and matches it to Team Roster `Mobile #`
 ↓
@@ -54,7 +54,7 @@ Key Airtable source of truth:
   - `Telegram Account`
   - `Mobile #`
   - `Telegram User ID` (single line text; Concierge/Hermes may update only for identity verification)
-  - `Telegram Verified At` (date/time; Concierge/Hermes may update only for identity verification)
+  - `Telegram Verified at` (date/time; Concierge/Hermes may update only for identity verification)
   - `Telegram Verification Method` (single line text; Concierge/Hermes may update only for identity verification, e.g. `username`, `shared_mobile`, `admin_manual`)
   - `Telegram Display Name` (single line text; optional troubleshooting snapshot; Concierge/Hermes may update)
   - `Telegram Username` (single line text; optional snapshot; Concierge/Hermes may update)
@@ -174,9 +174,12 @@ Team Roster = Yes
 Availability = Available OR Reserve - potentially available
 not self
 not already unavailable / already buddied this cycle
+not the member’s current/most recent active buddy when the user asks for a new/replacement buddy
 ```
 
 Only members whose Airtable Availability is exactly `Available` or `Reserve - potentially available` may be recommended/suggested/requested. Display `Reserve - potentially available` as member-facing `available`; all other Availability values display as `unavailable` and are not requestable.
+
+Manual recommendation pitfall: before giving the user a forward-ready list of 2–3 candidates, check the member’s current/recent `Buddy Pairing History` and any active/pending request records. If the user says the member “needs a new buddy,” explicitly exclude the current buddy even if that person scores highly from prior history or shared business focus. Prior pairing history can be a positive signal only when the request is for a repeat/favorite buddy, not when the task is replacement matching.
 
 See `references/buddy-concierge-gate-and-flow.md` for the concrete access-gate and wording details captured from the implementation session.
 
