@@ -181,6 +181,10 @@ Only members whose Airtable Availability is exactly `Available` or `Reserve - po
 
 Manual recommendation pitfall: before giving the user a forward-ready list of 2–3 candidates, check the member’s current/recent `Buddy Pairing History` and any active/pending request records. If the user says the member “needs a new buddy,” explicitly exclude the current buddy even if that person scores highly from prior history or shared business focus. Prior pairing history can be a positive signal only when the request is for a repeat/favorite buddy, not when the task is replacement matching.
 
+Member-facing copy preference: avoid the word “hustle” in Success Circles / Momentum Buddy copy because the program does not promote hustle culture. Use process-oriented phrasing such as “someone who understands the process of owning and operating a business.” If Airtable profile text contains “hustle,” translate it into this preferred phrasing in recommendations and emails.
+
+When drafting a buddy-suggestion email, confirm the audience from the user’s wording before assuming the email goes to the person being matched. If the user says “suggest Marco Cepeda and Andy Zapata as Buddies,” and later asks for an email, draft it to Marco and Andy as a proposed partnership between them unless they specify a third-party recipient. If asked to draft from `connect@successcircles.com`, create a Gmail draft only; do not send without explicit approval. See `templates/buddy-partnership-suggestion-email.md` for reusable wording.
+
 See `references/buddy-concierge-gate-and-flow.md` for the concrete access-gate and wording details captured from the implementation session.
 
 ## Email notification and admin approval expansion
@@ -196,7 +200,7 @@ Key design rules:
 - Concierge sends the Telegram admin-review message after the requester confirms their buddy choice.
 - Main Hermes sends the admin email after requester confirmation.
 - Member emails are sent only after admin approval.
-- When asked what emails are sent after approval, provide the two member templates from `references/buddy-concierge-email-approval-workflow.md`: requester notification (`Your Momentum Braintrust Buddy pairing request has been sent`) and requested-buddy request (`Momentum Braintrust Buddy Pairing Request from [Requester Name]`). Include the 5-minute alignment-call instruction and the requirement to let Success Circles know if both agree.
+- When asked what emails are sent after approval, provide the two member templates from `references/buddy-concierge-email-approval-workflow.md`: requester notification (`Your Momentum Braintrust Buddy pairing request has been sent`) and requested-buddy request (`Momentum Braintrust Buddy Pairing Request from [Requester Name]`). The requested-buddy request email must be sent to the requested buddy with the requester CC'd, so both members can see the same initial request thread. Include the 5-minute alignment-call instruction and the requirement to let Success Circles know if both agree.
 - Admin approves/rejects by replying to Concierge with requester + requested buddy names. This is the intended admin workflow and should not require manual Airtable editing:
   ```text
   approve request of [Requester Name] with [Requested Buddy Name]

@@ -190,7 +190,7 @@ reject request of [Requester Name] with [Requested Buddy Name]
 
 ## Requester email template
 
-No CC. Sent only after admin approval.
+Sent only after admin approval. The requester is also CC'd on the requested-buddy request email so both members can see the same initial request thread.
 
 ```text
 Subject: Your Momentum Braintrust Buddy pairing request has been sent
@@ -214,7 +214,7 @@ SMS: +1 (747) 224-7253
 
 ## Requested buddy email template
 
-No CC. Sent only after admin approval.
+Sent only after admin approval. Send this email to the requested buddy and CC the requester.
 
 ```text
 Subject: Momentum Braintrust Buddy Pairing Request from [Requester Name]
