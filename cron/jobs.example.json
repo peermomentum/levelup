@@ -45,7 +45,7 @@
     "deliver": "origin",
     "enabled": true,
     "id": "53cbeeb71fa6",
-    "name": "Buddy Concierge approved-request email sender",
+    "name": "Buddy Concierge member-confirmed request email sender",
     "schedule": {
       "display": "every 2m",
       "kind": "interval",

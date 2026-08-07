@@ -97,7 +97,7 @@ Availability = Reserve - potentially available → display as available
 Everything else → display as unavailable
 ```
 
-Only members whose Airtable `Availability` is exactly `Available` or `Reserve - potentially available` may be recommended/suggested/requested as a buddy. A past/favorite/history buddy shown as `unavailable` must not be submitted for admin review; ask the member to choose an available option, see other recommendations, or type `no preference`.
+Only members whose Airtable `Availability` is exactly `Available` or `Reserve - potentially available` may be recommended/suggested/requested as a buddy. A past/favorite/history buddy shown as `unavailable` must not have a request email queued; ask the member to choose an available option, see other recommendations, or type `no preference`.
 
 ## Future approved-request writeback
 
@@ -110,12 +110,12 @@ Main Hermes script:
 Cron job:
 
 ```text
-Buddy Concierge approved-request email sender
+Buddy Concierge member-confirmed request email sender
 job_id = 53cbeeb71fa6
 schedule = every 2 minutes
 ```
 
-After Admin approval, the email watcher sends both member emails and creates a `Buddy Pairing History` record for the future approved pairing:
+After the requester confirms a requestable buddy, the email watcher sends one email to the requested buddy with the requester CC'd and creates a `Buddy Pairing History` record with `Status = Requested` for the pending pairing:
 
 - `Buddy Pairing Type = Duo`
 - `Member A = requester`

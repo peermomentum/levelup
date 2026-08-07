@@ -95,7 +95,7 @@ When showing past/favorite buddies as potential choices, include a member-facing
 [Name] (unavailable)
 ```
 
-Treat Airtable `Availability = Available` and `Availability = Reserve - potentially available` as member-facing `available`. All other Availability values display as `unavailable`. Do not recommend, request, or submit unavailable people for admin review; ask the member to choose an available option, view other recommendations, or type `no preference`.
+Treat Airtable `Availability = Available` and `Availability = Reserve - potentially available` as member-facing `available`. All other Availability values display as `unavailable`. Do not recommend, request, or queue request emails for unavailable people; ask the member to choose an available option, view other recommendations, or type `no preference`.
 
 Member-facing answer examples:
 

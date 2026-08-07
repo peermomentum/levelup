@@ -24,8 +24,8 @@ Last Bot Action = test_record_resolved_cancelled
 Why this shape:
 
 - `Status = Cancelled` removes it from active buddy request work.
-- `Admin Approval Status = Rejected` removes it from pending admin-approval filters.
-- `Member Email Status = Not Sent - Rejected` prevents the approved-request email sender from ever sending member emails.
+- `Admin Approval Status = Rejected` removes it from legacy pending admin-approval filters.
+- `Member Email Status = Not Sent - Rejected` prevents the member-confirmed request email sender from ever sending member emails.
 - Keeping the record preserves trial/audit history instead of deleting data.
 
 ## Verification after cleanup
@@ -34,7 +34,7 @@ Check counts in `Buddy Pairing Requests`:
 
 ```text
 OR({Status}='Pending Admin Review',{Admin Approval Status}='Pending') = 0 or expected active-only count
-AND({Admin Approval Status}='Approved', {Member Email Status}='Needs Sending') = 0 or expected active email queue count
+AND({Status}='Member Confirmed - Email Queued', {Member Email Status}='Needs Sending') = 0 or expected active email queue count
 {Member Email Status}='Failed' = 0 or known failures only
 ```
 
