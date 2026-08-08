@@ -60,3 +60,7 @@ Absorbed source skill packages live under `references/source-packages/<skill-nam
 - [ ] Output file/API result/job status was verified.
 - [ ] Original files were preserved unless in-place editing was requested.
 - [ ] Side effects such as sends/shares/subscription changes were scoped explicitly.
+
+## Telegram/shareable team-document pitfall
+
+When the user asks to turn a process explanation into a shareable team artifact on Telegram, prefer a robust plain-text or Markdown file unless they explicitly need PDF. If generating PDF anyway, also offer or attach a `.txt`/`.md` fallback for legibility and delivery reliability. Do not treat a syntactically valid PDF header as sufficient verification; verify the document can be opened/extracted when possible, or provide a simpler text version immediately if PDF tooling is limited.
