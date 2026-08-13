@@ -166,6 +166,9 @@ When the authorized member completes intake, the bot should not immediately conf
    - “you choose” → pick the top candidate and ask final confirmation.
 6. Create or update a pairing request / pending confirmation record; only mark confirmed after both members or an admin confirms.
 
+- The active Concierge bot and main Hermes use the same Airtable base/table for recommendations: base `appDxJWXndV2Bfec3`, Team Roster table `tbl8EZW9OIJRMs1bf`. Concierge has less tool access, but its `buddy_concierge_pairing` plugin reads the live Team Roster directly.
+- `recommend_candidates` returns candidate `membership`, raw `availability`, and `availability_label` so the model can avoid mislabeling reserve/potentially-available candidates. If a candidate has `Membership = Reserve` or `Availability = Reserve - Potentially Available`, do not say “not reserve” / “no reserve”; say “available as a reserve / potentially available member,” or simply “available” for member-facing brevity.
+
 Candidate eligibility v1:
 
 ```text
